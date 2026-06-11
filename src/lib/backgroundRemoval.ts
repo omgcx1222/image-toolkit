@@ -29,12 +29,15 @@ export interface AiRemoveOptions {
 
 /**
  * 使用 @imgly/background-removal 进行 AI 抠图。
- * 模型在浏览器内通过 ONNX 运行，首次使用会下载模型权重并缓存。
+ * 模型与 wasm 全部从本站 /imgly/ 加载，完全离线、不访问任何外部 CDN。
  */
 export async function aiRemoveBackground(source: Blob, options: AiRemoveOptions): Promise<Blob> {
   const { removeBackground } = await loadImgly()
+  // publicPath 需为绝对 URL；指向本站自托管的 /imgly/ 资源目录
+  const publicPath = typeof window !== "undefined" ? `${window.location.origin}/imgly/` : undefined
   const config: Config = {
     model: QUALITY_MODEL[options.quality],
+    publicPath,
     output: { format: "image/png", quality: 1 },
     progress: (_key, current, total) => {
       if (options.onProgress && total > 0) {

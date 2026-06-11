@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // 跳过构建时的 ESLint（项目未单独配置 next lint 规则）
-  eslint: { ignoreDuringBuilds: true },
   webpack: (config) => {
     // @imgly/background-removal 依赖 onnxruntime-web，仅在浏览器运行
     config.resolve.fallback = {
