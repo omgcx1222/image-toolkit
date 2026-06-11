@@ -1,4 +1,7 @@
-import { NavLink, Outlet } from "react-router-dom"
+"use client"
+
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useTranslation } from "react-i18next"
 import { ImageOff, Film } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -6,12 +9,21 @@ import { ThemeToggle } from "./ThemeToggle"
 import { LanguageToggle } from "./LanguageToggle"
 
 // 顶部导航 + 内容区布局
-export function AppLayout() {
+export function AppLayout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation()
+  const pathname = usePathname()
 
   const navItems = [
-    { to: "/backgroundRemoval", label: t("nav.backgroundRemoval"), icon: <ImageOff className="size-4" /> },
-    { to: "/videoFrames", label: t("nav.videoFrames"), icon: <Film className="size-4" /> }
+    {
+      to: "/backgroundRemoval",
+      label: t("nav.backgroundRemoval"),
+      icon: <ImageOff className="size-4" />
+    },
+    {
+      to: "/videoFrames",
+      label: t("nav.videoFrames"),
+      icon: <Film className="size-4" />
+    }
   ]
 
   return (
@@ -23,23 +35,24 @@ export function AppLayout() {
           </div>
 
           <nav className="flex items-center gap-1">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  cn(
+            {navItems.map((item) => {
+              const isActive = pathname === item.to
+              return (
+                <Link
+                  key={item.to}
+                  href={item.to}
+                  className={cn(
                     "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                     isActive
                       ? "bg-secondary text-secondary-foreground"
                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                  )
-                }
-              >
-                {item.icon}
-                <span className="hidden sm:inline">{item.label}</span>
-              </NavLink>
-            ))}
+                  )}
+                >
+                  {item.icon}
+                  <span className="hidden sm:inline">{item.label}</span>
+                </Link>
+              )
+            })}
           </nav>
 
           <div className="flex items-center gap-1">
@@ -49,9 +62,7 @@ export function AppLayout() {
         </div>
       </header>
 
-      <main className="container flex-1 py-6">
-        <Outlet />
-      </main>
+      <main className="container flex-1 py-6">{children}</main>
 
       <footer className="border-t py-4">
         <p className="container text-center text-xs text-muted-foreground">{t("common.appDesc")}</p>

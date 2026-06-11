@@ -1,27 +1,30 @@
 # Image Toolkit 需求文档
 
-> 一个纯前端的图片处理平台，无后端、隐私友好（所有处理在浏览器本地完成）。
+> 一个图片处理平台，采用 Next.js 服务端渲染（SSR）输出页面外壳，所有图片/视频处理仍在浏览器本地完成（隐私友好）。
 
 ## 1. 技术栈
 
-| 类别     | 选型                                            |
-| -------- | ----------------------------------------------- |
-| 构建工具 | Vite                                            |
-| 框架     | React 18 + TypeScript                           |
-| UI 组件  | shadcn/ui                                       |
-| 样式     | TailwindCSS                                     |
-| 国际化   | react-i18next（中文默认 / 英文）                |
-| 主题     | 明亮 / 暗黑 / 跟随系统（可切换）                |
-| 背景移除 | @imgly/background-removal（浏览器内 ONNX 模型） |
-| 打包下载 | jszip + file-saver                              |
-| 视频截帧 | HTML5 Video + Canvas                            |
-| 图标     | lucide-react                                    |
+| 类别     | 选型                                                                      |
+| -------- | ------------------------------------------------------------------------- |
+| 框架     | Next.js 14（App Router，SSR）+ React 18 + TypeScript                      |
+| 渲染     | 服务端渲染页面外壳；交互与处理为客户端组件                                |
+| 路由     | Next.js App Router（文件路由）                                            |
+| UI 组件  | shadcn/ui                                                                 |
+| 样式     | TailwindCSS                                                               |
+| 国际化   | react-i18next（中文默认 / 英文）                                          |
+| 主题     | 明亮 / 暗黑 / 跟随系统（可切换）                                          |
+| 背景移除 | @imgly/background-removal（npm 本地依赖、打包自托管；浏览器内 ONNX 运行） |
+| 打包下载 | jszip + file-saver                                                        |
+| 视频截帧 | HTML5 Video + Canvas                                                      |
+| 图标     | lucide-react                                                              |
+
+> 运行：`npm run dev`（默认 http://localhost:3000）；构建：`npm run build` 后 `npm start`。
 
 ## 2. 全局特性
 
 - **主题切换**：明亮 / 暗黑 / 跟随系统，状态持久化到 localStorage。
 - **多语言**：中文（默认）、英文，可切换，状态持久化。
-- **隐私**：所有图片/视频处理均在本地浏览器完成，不上传任何服务器。AI 抠图通过浏览器内 ONNX(WASM) 运行，仅首次从 CDN 下载模型权重并缓存。
+- **隐私**：所有图片/视频处理均在本地浏览器完成，不上传任何服务器。AI 抠图库（@imgly/background-removal）作为 npm 依赖本地打包自托管，通过浏览器内 ONNX(WASM) 运行；仅模型权重首次按需下载并缓存。
 - **所有功能参数均为用户可配置，避免硬编码固定值。**
 - **批量下载**：处理结果支持单张下载或打包为 zip 批量下载。
 - **路由缓存**：功能状态提升到全局 store，切换路由后数据不丢失。
@@ -88,25 +91,32 @@
 - 截取的帧以缩略图网格展示，可单独删除、单独下载、全选打包，点击可放大。
 - **帧动画预览**：将已截取的帧按可调帧率（FPS，1–60）播放一次（不循环），到末帧停止；可重新播放。
 
-## 5. 目录结构（规划）
+## 5. 目录结构
 
 ```
 image-toolkit/
+├── app/                  # Next.js App Router（SSR 外壳与路由）
+│   ├── layout.tsx        # 根布局（服务端组件）+ 主题预设脚本
+│   ├── providers.tsx     # 'use client' 客户端 Providers（主题/i18n/状态/布局）
+│   ├── page.tsx          # 首页重定向
+│   ├── backgroundRemoval/page.tsx
+│   └── videoFrames/page.tsx
 ├── src/
 │   ├── components/        # 可复用 UI 组件
 │   │   ├── ui/            # shadcn 基础组件
-│   │   └── common/        # 业务通用组件（上传区、主题切换、语言切换等）
+│   │   └── common/        # 业务通用组件（上传区、主题/语言切换、Lightbox 等）
 │   ├── features/
 │   │   ├── BackgroundRemoval/   # 透明底功能
 │   │   └── VideoFrames/         # 视频截帧功能
-│   ├── hooks/             # 自定义 hooks
 │   ├── lib/               # 工具函数（抠图、截帧、zip 等）
 │   ├── i18n/              # 国际化配置与语言包
-│   ├── stores/            # 全局状态（主题、语言）
-│   ├── pages/             # 页面
-│   └── router/            # 路由
+│   ├── stores/            # 全局状态（功能数据缓存，跨路由保留）
+│   └── views/             # 页面级组件（被 app 路由引用）
+├── next.config.mjs        # Next 配置（含 onnxruntime-web 打包处理）
 └── ...
 ```
+
+> 注：`src/pages` 为 Next Pages Router 保留目录，本项目使用 App Router，页面级组件放在 `src/views` 以避免冲突。
 
 ## 6. 暂不包含（后续可扩展）
 
