@@ -14,9 +14,6 @@ dist-ssr
 /out/
 next-env.d.ts
 
-# 离线 AI 模型资源（由 scripts/copy-imgly-data.mjs 生成，体积大不入库）
-/public/imgly/
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

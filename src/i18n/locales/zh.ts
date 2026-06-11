@@ -59,7 +59,7 @@ export default {
       done: "完成",
       error: "失败"
     },
-    aiLoadingModel: "首次使用需下载 AI 模型，请稍候…",
+    aiLoadingModel: "AI 抠图需联网：首次使用会从线上 CDN 下载模型（约几十 MB），下载后浏览器会缓存。请保持网络畅通。",
     empty: "请先上传图片",
     reprocess: "重新抠图",
     selectAll: "全选/全不选",

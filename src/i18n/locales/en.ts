@@ -59,7 +59,8 @@ export default {
       done: "Done",
       error: "Failed"
     },
-    aiLoadingModel: "Downloading AI model on first use, please wait…",
+    aiLoadingModel:
+      "AI cutout requires internet: the model (tens of MB) is downloaded from an online CDN on first use, then cached by the browser. Please stay connected.",
     empty: "Please upload images first",
     reprocess: "Re-cutout",
     selectAll: "Select all / none",

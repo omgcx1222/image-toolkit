@@ -1,6 +1,6 @@
 # Image Toolkit 需求文档
 
-> 一个图片处理平台，采用 Next.js（App Router，SSR）输出页面外壳，所有图片/视频处理及 AI 抠图均在浏览器本地完成，且 AI 模型资源完全本地自托管 —— **可彻底离线运行，不访问任何外部网络**。
+> 一个图片处理平台，采用 Next.js（App Router，SSR）输出页面外壳。图片/视频处理在浏览器本地完成；AI 抠图在浏览器内运行（ONNX/WASM），其模型权重首次使用时从线上 CDN 下载并由浏览器缓存（需联网）。
 
 ## 1. 技术栈
 
@@ -8,24 +8,24 @@
 | -------- | -------------------------------------------------------------------------------- |
 | 框架     | Next.js 16（App Router，SSR，--webpack）+ React 18 + TypeScript                  |
 | 渲染     | 服务端渲染页面外壳；交互与处理为客户端组件                                       |
-| 路由     | Next.js App Router（文件路由，页面位于 `app/<route>/page.tsx`）                  |
+| 路由     | Next.js App Router（文件路由，页面位于 `src/app/<route>/page.tsx`）              |
 | UI 组件  | shadcn/ui                                                                        |
 | 样式     | TailwindCSS                                                                      |
 | 国际化   | react-i18next（中文默认 / 英文）                                                 |
 | 主题     | 明亮 / 暗黑 / 跟随系统（可切换）                                                 |
-| 背景移除 | @imgly/background-removal（浏览器内 ONNX；模型与 wasm 完全本地自托管，离线可用） |
+| 背景移除 | @imgly/background-removal（浏览器内 ONNX；模型权重走线上 CDN，首次按需下载缓存） |
 | 打包下载 | jszip + file-saver                                                               |
 | 视频截帧 | HTML5 Video + Canvas                                                             |
 | 图标     | lucide-react                                                                     |
 
 > 运行：`npm run dev`（默认 http://localhost:3000）；构建：`npm run build` 后 `npm start`。
-> 首次 `dev`/`build` 会执行 `scripts/copy-imgly-data.mjs`，将与库版本匹配的 AI 模型/wasm 资源下载到 `public/imgly`（已缓存则跳过）。该步骤需联网一次，之后应用运行完全离线。
+> 代码统一位于 `src/` 下（含 `src/app` App Router 目录），符合 Next.js “src 目录”官方约定。
 
 ## 2. 全局特性
 
 - **主题切换**：明亮 / 暗黑 / 跟随系统，状态持久化到 localStorage。
 - **多语言**：中文（默认）、英文，可切换，状态持久化。
-- **隐私 / 离线**：所有图片/视频处理均在本地浏览器完成，不上传任何服务器。AI 抠图的模型与 onnxruntime wasm 由 `scripts/copy-imgly-data.mjs` 下载到 `public/imgly` 本地自托管，运行时通过 `publicPath` 指向本站 `/imgly/` 加载，**不访问任何外部 CDN，可完全离线使用**。
+- **隐私**：图片/视频处理均在本地浏览器完成，不上传任何服务器。AI 抠图同样在浏览器内运行（不上传图片）；仅模型权重首次从线上 CDN 下载并缓存，因此 **AI 抠图需要联网**（UI 内有明确提示）。
 - **所有功能参数均为用户可配置，避免硬编码固定值。**
 - **批量下载**：处理结果支持单张下载或打包为 zip 批量下载。
 - **路由缓存**：功能状态提升到全局 store，切换路由后数据不丢失。
@@ -96,13 +96,14 @@
 
 ```
 image-toolkit/
-├── app/                  # Next.js App Router（SSR 外壳与路由）
-│   ├── layout.tsx        # 根布局（服务端组件）+ 主题预设脚本
-│   ├── providers.tsx     # 'use client' 客户端 Providers（主题/i18n/状态/布局）
-│   ├── page.tsx          # 首页重定向
-│   ├── backgroundRemoval/page.tsx   # 透明底页面（'use client'）
-│   └── videoFrames/page.tsx         # 视频截帧页面（'use client'）
-├── src/
+├── src/                  # 所有源码统一位于 src 下（Next.js src 目录约定）
+│   ├── app/              # Next.js App Router（SSR 外壳与路由）
+│   │   ├── layout.tsx    # 根布局（服务端组件）+ 主题预设脚本
+│   │   ├── providers.tsx # 'use client' 客户端 Providers（主题/i18n/状态/布局）
+│   │   ├── globals.css   # 全局样式
+│   │   ├── page.tsx      # 首页重定向
+│   │   ├── backgroundRemoval/page.tsx   # 透明底页面（'use client'）
+│   │   └── videoFrames/page.tsx         # 视频截帧页面（'use client'）
 │   ├── components/        # 可复用 UI 组件
 │   │   ├── ui/            # shadcn 基础组件
 │   │   └── common/        # 业务通用组件（上传区、主题/语言切换、Lightbox 等）
@@ -112,14 +113,11 @@ image-toolkit/
 │   ├── lib/               # 工具函数（抠图、截帧、zip 等）
 │   ├── i18n/              # 国际化配置与语言包
 │   └── stores/            # 全局状态（功能数据缓存，跨路由保留）
-├── scripts/
-│   └── copy-imgly-data.mjs  # 下载 AI 模型/wasm 到 public/imgly（离线自托管）
-├── public/imgly/          # 本地 AI 资源（脚本生成，已 gitignore）
 ├── next.config.mjs        # Next 配置（--webpack；含 onnxruntime-web 打包处理）
 └── ...
 ```
 
-> 页面级组件直接位于 `app/<route>/page.tsx`（App Router 习惯用法）；业务/可复用代码放在 `src/`。
+> 页面级组件直接位于 `src/app/<route>/page.tsx`（App Router 习惯用法）；其余业务/可复用代码同样位于 `src/`。
 
 ## 6. 暂不包含（后续可扩展）
 

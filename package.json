@@ -3,10 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "copy:imgly": "node scripts/copy-imgly-data.mjs",
-    "predev": "node scripts/copy-imgly-data.mjs",
     "dev": "next dev --webpack",
-    "prebuild": "node scripts/copy-imgly-data.mjs",
     "build": "next build --webpack",
     "start": "next start"
   },
