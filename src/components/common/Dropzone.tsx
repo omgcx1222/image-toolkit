@@ -14,10 +14,20 @@ interface DropzoneProps {
   // 选中文件回调
   onFiles: (files: File[]) => void
   className?: string
+  // 紧凑内联模式：用于"重新添加"等次级入口，不显示大号渐变图标
+  compact?: boolean
 }
 
 // 通用上传拖拽区：支持点击选择与拖拽，复用于图片与视频上传
-export function Dropzone({ accept, multiple = false, title, hint, onFiles, className }: DropzoneProps) {
+export function Dropzone({
+  accept,
+  multiple = false,
+  title,
+  hint,
+  onFiles,
+  className,
+  compact = false
+}: DropzoneProps) {
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = React.useState(false)
 
@@ -47,14 +57,21 @@ export function Dropzone({ accept, multiple = false, title, hint, onFiles, class
         handleFiles(e.dataTransfer.files)
       }}
       className={cn(
-        "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-10 text-center transition-colors",
+        "group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl text-center transition-colors",
+        compact ? "flex-row gap-1.5" : "border-2 border-dashed p-10",
         dragging
-          ? "border-primary bg-primary/5"
-          : "border-muted-foreground/25 hover:border-primary/50 hover:bg-accent/40",
+          ? "border-primary bg-primary/10"
+          : "border-muted-foreground/25 hover:border-primary/60 hover:bg-accent/50",
         className
       )}
     >
-      <UploadCloud className="size-10 text-muted-foreground" />
+      {compact ? (
+        <UploadCloud className="size-4 text-primary" />
+      ) : (
+        <span className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-transform group-hover:-translate-y-0.5">
+          <UploadCloud className="size-6" />
+        </span>
+      )}
       <p className="text-sm font-medium">{title}</p>
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
       <input

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dropzone } from "@/components/common/Dropzone"
 import { Lightbox } from "@/components/common/Lightbox"
+import { ConfirmDialog } from "@/components/common/ConfirmDialog"
 import { captureFrame, computeTimes, extractFramesByTimes, type ExtractedFrame } from "@/lib/video"
 import { useVideoFrames } from "@/stores/VideoFramesStore"
 import { SettingsPanel } from "./SettingsPanel"
@@ -36,6 +37,8 @@ export function VideoFrames() {
   const [preview, setPreview] = useState<string | null>(null)
   // 批量提取进度
   const [progress, setProgress] = useState<{ current: number; total: number } | null>(null)
+  // 清空二次确认
+  const [confirmClear, setConfirmClear] = useState(false)
 
   // 文件名后缀
   const ext = config.outputFormat === "jpeg" ? "jpg" : config.outputFormat
@@ -155,7 +158,13 @@ export function VideoFrames() {
                     {t("video.estimated")}: {estimatedCount} {t("video.frames")}
                   </span>
                 )}
-                <Dropzone accept="video/*" title={t("upload.addMore")} onFiles={handleFiles} className="border-0 p-0" />
+                <Dropzone
+                  accept="video/*"
+                  title={t("upload.addMore")}
+                  onFiles={handleFiles}
+                  compact
+                  className="border-0 p-0"
+                />
               </div>
 
               <div className="flex flex-wrap gap-2 pt-2">
@@ -178,7 +187,7 @@ export function VideoFrames() {
                   <Package />
                   {t("common.downloadAll")}
                 </Button>
-                <Button variant="outline" onClick={clearFrames} disabled={frames.length === 0}>
+                <Button variant="outline" onClick={() => setConfirmClear(true)} disabled={frames.length === 0}>
                   <Trash2 />
                   {t("common.clear")}
                 </Button>
@@ -212,6 +221,19 @@ export function VideoFrames() {
 
       {/* 放大预览 */}
       {preview && <Lightbox src={preview} onClose={() => setPreview(null)} />}
+
+      {/* 清空二次确认 */}
+      <ConfirmDialog
+        open={confirmClear}
+        title={t("common.clearConfirmTitle")}
+        description={t("common.clearConfirmDesc")}
+        confirmText={t("common.clear")}
+        onConfirm={() => {
+          clearFrames()
+          setConfirmClear(false)
+        }}
+        onCancel={() => setConfirmClear(false)}
+      />
     </div>
   )
 }

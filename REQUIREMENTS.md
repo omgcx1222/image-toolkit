@@ -102,8 +102,8 @@ image-toolkit/
 │   │   ├── providers.tsx # 'use client' 客户端 Providers（主题/i18n/状态/布局）
 │   │   ├── globals.css   # 全局样式
 │   │   ├── page.tsx      # 首页重定向
-│   │   ├── backgroundRemoval/page.tsx   # 透明底页面（'use client'）
-│   │   └── videoFrames/page.tsx         # 视频截帧页面（'use client'）
+│   │   ├── background-removal/page.tsx   # 透明底页面（'use client'）
+│   │   └── video-frames/page.tsx         # 视频截帧页面（'use client'）
 │   ├── components/        # 可复用 UI 组件
 │   │   ├── ui/            # shadcn 基础组件
 │   │   └── common/        # 业务通用组件（上传区、主题/语言切换、Lightbox 等）

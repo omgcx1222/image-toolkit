@@ -38,7 +38,7 @@ export const DEFAULT_BG_CONFIG: BgConfig = {
   mode: "ai",
   quality: "balanced",
   color: "#00ff00",
-  tolerance: 60,
+  tolerance: 0,
   feather: 30,
   outputFormat: "png",
   previewBg: "transparent"

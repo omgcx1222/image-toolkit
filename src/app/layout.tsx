@@ -1,6 +1,14 @@
 import type { Metadata } from "next"
+import { Plus_Jakarta_Sans } from "next/font/google"
 import "./globals.css"
 import { Providers } from "./providers"
+
+// 品牌字体：现代、友好、易读，作为 UI 默认无衬线字体（中文自动回退到系统字体）
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap"
+})
 
 export const metadata: Metadata = {
   title: "Image Toolkit",
@@ -21,7 +29,7 @@ const themeInitScript = `
 // 根布局（服务端组件）：输出 SSR 外壳，交互逻辑下沉到客户端 Providers
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
+    <html lang="zh-CN" className={jakarta.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>

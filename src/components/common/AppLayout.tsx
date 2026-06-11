@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslation } from "react-i18next"
-import { ImageOff, Film } from "lucide-react"
+import { ImageOff, Film, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "./ThemeToggle"
 import { LanguageToggle } from "./LanguageToggle"
@@ -15,12 +15,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     {
-      to: "/backgroundRemoval",
+      to: "/background-removal",
       label: t("nav.backgroundRemoval"),
       icon: <ImageOff className="size-4" />
     },
     {
-      to: "/videoFrames",
+      to: "/video-frames",
       label: t("nav.videoFrames"),
       icon: <Film className="size-4" />
     }
@@ -28,10 +28,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b bg-background/70 backdrop-blur-xl">
         <div className="container flex h-14 items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-base font-bold">{t("common.appName")}</span>
+            {/* 品牌 Logo：纯色主色块 + 主色文字 */}
+            <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Sparkles className="size-4" />
+            </span>
+            <span className="text-base font-bold tracking-tight text-primary">{t("common.appName")}</span>
           </div>
 
           <nav className="flex items-center gap-1">
@@ -42,10 +46,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   key={item.to}
                   href={item.to}
                   className={cn(
-                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-secondary text-secondary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                    "flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                    isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent"
                   )}
                 >
                   {item.icon}

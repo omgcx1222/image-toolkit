@@ -4,6 +4,7 @@ import { CheckSquare, Info, Loader2, Package, Play, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dropzone } from "@/components/common/Dropzone"
 import { Lightbox } from "@/components/common/Lightbox"
+import { ConfirmDialog } from "@/components/common/ConfirmDialog"
 import { useBackgroundRemoval } from "@/stores/BackgroundRemovalStore"
 import { SettingsPanel } from "./SettingsPanel"
 import { ImageCard } from "./ImageCard"
@@ -31,6 +32,8 @@ export function BackgroundRemoval() {
 
   // 放大预览状态
   const [preview, setPreview] = useState<{ src: string; checker: boolean } | null>(null)
+  // 清空二次确认
+  const [confirmClear, setConfirmClear] = useState(false)
 
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
@@ -68,11 +71,11 @@ export function BackgroundRemoval() {
                   {t("bg.selectAll")}
                 </Button>
               )}
-              <Button variant="secondary" onClick={downloadSelected} disabled={selectedCount === 0}>
+              <Button variant="outline" onClick={downloadSelected} disabled={selectedCount === 0}>
                 <Package />
                 {t("bg.downloadSelected")} ({selectedCount})
               </Button>
-              <Button variant="outline" onClick={clear} disabled={running}>
+              <Button variant="destructive" onClick={() => setConfirmClear(true)} disabled={running}>
                 <Trash2 />
                 {t("common.clear")}
               </Button>
@@ -99,6 +102,19 @@ export function BackgroundRemoval() {
 
       {/* 放大预览 */}
       {preview && <Lightbox src={preview.src} checker={preview.checker} onClose={() => setPreview(null)} />}
+
+      {/* 清空二次确认 */}
+      <ConfirmDialog
+        open={confirmClear}
+        title={t("common.clearConfirmTitle")}
+        description={t("common.clearConfirmDesc")}
+        confirmText={t("common.clear")}
+        onConfirm={() => {
+          clear()
+          setConfirmClear(false)
+        }}
+        onCancel={() => setConfirmClear(false)}
+      />
     </div>
   )
 }

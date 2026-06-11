@@ -73,15 +73,25 @@ export function ImageCard({
         <div className="flex flex-col border-l">
           <div
             className={cn(
-              "flex aspect-square items-center justify-center p-2",
+              "relative flex aspect-square items-center justify-center p-2",
               previewBg === "transparent" && "bg-checkerboard"
             )}
             style={resultStyle}
           >
             {item.status === "processing" && (
-              <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                <Loader2 className="size-6 animate-spin" />
-                {item.progress > 0 && <span className="text-xs">{Math.round(item.progress * 100)}%</span>}
+              // 处理中：用对比明显的浮层展示，避免与预览背景色融为一体
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-background/85 backdrop-blur-sm">
+                <Loader2 className="size-7 animate-spin text-primary" />
+                <span className="text-sm font-semibold text-foreground">
+                  {item.progress > 0 ? `${Math.round(item.progress * 100)}%` : t("bg.status.processing")}
+                </span>
+                {/* 进度条：主色填充，清晰可见 */}
+                <div className="h-1.5 w-3/4 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-primary transition-all duration-200"
+                    style={{ width: `${Math.max(item.progress * 100, 8)}%` }}
+                  />
+                </div>
               </div>
             )}
             {item.status === "error" && (

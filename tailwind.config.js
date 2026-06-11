@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  content: ["./index.html", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: ["./src/**/*.{ts,tsx}"],
   theme: {
     container: {
       center: true,
@@ -9,6 +9,18 @@ module.exports = {
       screens: { "2xl": "1400px" }
     },
     extend: {
+      fontFamily: {
+        // 默认无衬线字体使用 next/font 注入的品牌字体变量，并保留系统/中文回退
+        sans: [
+          "var(--font-sans)",
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "PingFang SC",
+          "Microsoft YaHei",
+          "sans-serif"
+        ]
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
