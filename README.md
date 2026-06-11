@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# Image Toolkit · 图片工具箱
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一个**纯前端**的在线图片 / 视频处理平台。所有处理均在浏览器本地完成，**图片不上传任何服务器**，保护隐私。页面外壳由 Next.js（App Router，SSR）输出，交互与处理逻辑为客户端组件。
 
-Currently, two official plugins are available:
+> AI 抠图在浏览器内运行（ONNX / WASM），仅模型权重首次使用时从线上 CDN 下载并由浏览器缓存，因此 **AI 抠图需要联网**。其余功能均可离线使用。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ 功能一览
 
-## React Compiler
+| 分类       | 功能       | 说明                                                                       |
+| ---------- | ---------- | -------------------------------------------------------------------------- |
+| 抠图与背景 | 图片透明底 | AI 智能抠图 / 指定颜色抠图（色键），导出透明背景                           |
+| 抠图与背景 | 证件照制作 | 抠图换底 + 标准尺寸裁剪（1 寸 / 2 寸等）+ 背景色（白 / 蓝 / 红）           |
+| 转换与压缩 | 格式转换   | PNG / JPG / WEBP 之间互转（高质量近无损）                                  |
+| 转换与压缩 | 图片压缩   | 减小体积且不损清晰度，可转为最小体积格式，自动防增大                       |
+| 图片编辑   | 图片裁剪   | 在图上框选矩形区域裁剪，支持比例约束，实时预览                             |
+| 图片编辑   | 添加水印   | 文字 / 图片(Logo) 水印，自定义样式 / 颜色 / 位置 / 透明度 / 平铺，实时预览 |
+| 视频工具   | 视频截帧   | 按间隔 / 帧率 / 总帧数 / 手动方式精确取帧，支持帧动画预览                  |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+> 详细需求见 [REQUIREMENTS.md](./REQUIREMENTS.md)。
 
-## Expanding the ESLint configuration
+## 🌐 全局特性
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **主题**：明亮 / 暗黑 / 跟随系统，状态持久化到 `localStorage`。
+- **多语言**：中文（默认）/ 英文，可切换并持久化。
+- **隐私优先**：所有处理在本地浏览器完成，不上传图片 / 视频。
+- **参数可配置**：功能参数均开放给用户调整，避免硬编码固定值。
+- **批量下载**：结果支持单张下载或打包为 zip 批量下载。
+- **路由缓存**：功能状态提升到全局 store，切换路由后数据不丢失。
+- **放大预览**：原图与结果图均支持点击放大（Lightbox），透明结果以棋盘格背景展示。
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🛠 技术栈
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+| 类别     | 选型                                                              |
+| -------- | ----------------------------------------------------------------- |
+| 框架     | Next.js 16（App Router，SSR，`--webpack`）+ React 18 + TypeScript |
+| UI 组件  | shadcn/ui                                                         |
+| 样式     | TailwindCSS                                                       |
+| 国际化   | react-i18next（中文默认 / 英文）                                  |
+| 背景移除 | @imgly/background-removal（浏览器内 ONNX，模型权重走线上 CDN）    |
+| 打包下载 | jszip + file-saver                                                |
+| 视频截帧 | HTML5 Video + Canvas                                              |
+| 图标     | lucide-react                                                      |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🚀 快速开始
+
+```bash
+# 安装依赖
+npm install
+
+# 开发模式（默认 http://localhost:3000）
+npm run dev
+
+# 构建并启动生产服务
+npm run build
+npm start
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📁 目录结构
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+src/
+├── app/                  # Next.js App Router（SSR 外壳与路由）
+│   ├── layout.tsx        # 根布局（服务端组件）+ 主题预设脚本
+│   ├── providers.tsx     # 'use client' 客户端 Providers（主题 / i18n / 状态 / 布局）
+│   ├── globals.css       # 全局样式
+│   ├── page.tsx          # 首页重定向
+│   └── <route>/page.tsx  # 各功能页面（'use client'）
+├── components/
+│   ├── ui/               # shadcn 基础组件
+│   └── common/           # 业务通用组件（上传区、主题 / 语言切换、Lightbox 等）
+├── features/             # 各功能模块（业务逻辑与子组件）
+├── lib/                  # 工具函数（抠图、截帧、zip 等）
+├── i18n/                 # 国际化配置与语言包
+└── stores/               # 全局状态（功能数据缓存，跨路由保留）
+```
+
+## 🔒 隐私说明
+
+除 AI 抠图首次需联网下载模型权重外，所有图片与视频的处理都在你的浏览器本地完成，不会上传到任何服务器。

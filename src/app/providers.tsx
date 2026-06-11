@@ -6,6 +6,11 @@ import { applyStoredLanguage } from "@/i18n"
 import { ThemeProvider } from "@/components/common/ThemeProvider"
 import { BackgroundRemovalProvider } from "@/stores/BackgroundRemovalStore"
 import { VideoFramesProvider } from "@/stores/VideoFramesStore"
+import { ConvertProvider } from "@/stores/ConvertStore"
+import { CompressProvider } from "@/stores/CompressStore"
+import { CropProvider } from "@/stores/CropStore"
+import { WatermarkProvider } from "@/stores/WatermarkStore"
+import { IdPhotoProvider } from "@/stores/IdPhotoStore"
 import { AppLayout } from "@/components/common/AppLayout"
 
 // 客户端 Providers：主题、i18n、各功能全局状态，以及统一布局
@@ -20,7 +25,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       <BackgroundRemovalProvider>
         <VideoFramesProvider>
-          <AppLayout>{children}</AppLayout>
+          <ConvertProvider>
+            <CompressProvider>
+              <CropProvider>
+                <WatermarkProvider>
+                  <IdPhotoProvider>
+                    <AppLayout>{children}</AppLayout>
+                  </IdPhotoProvider>
+                </WatermarkProvider>
+              </CropProvider>
+            </CompressProvider>
+          </ConvertProvider>
         </VideoFramesProvider>
       </BackgroundRemovalProvider>
     </ThemeProvider>

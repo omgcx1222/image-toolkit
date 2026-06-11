@@ -42,7 +42,7 @@ export function BackgroundRemoval() {
         <SettingsPanel config={config} onChange={patchConfig} />
         {config.mode === "ai" && (
           <div className="flex gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-400">
-            <Info className="mt-0.5 size-4 shrink-0" />
+            <Info className="size-4 shrink-0" />
             <span>{t("bg.aiLoadingModel")}</span>
           </div>
         )}
